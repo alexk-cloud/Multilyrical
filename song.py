@@ -2,9 +2,12 @@ import asyncio
 import sounddevice as sd
 import soundfile as sf
 from shazamio import Serialize, Shazam
+from pathlib import Path
 
 MAX_REC_SECS = 5
 SAMPLE_RATE = 44100
+FILE_NAME = "recording.wav"
+FILE_PATH = Path(FILE_NAME)
 
 def record():
     duration = MAX_REC_SECS
@@ -15,14 +18,30 @@ def record():
 
     sd.wait()
 
-    sf.write("recording.mp3", audio, sample_rate)
+    sf.write(FILE_NAME, audio, sample_rate)
 
-    print("recording.mp3 saved!")
+    print("Audio saved!")
 
-def main():
+async def identify():
+    shazam = Shazam()
+
+    song = await shazam.recognize(FILE_NAME)
+
+    if "track" in song:
+        print("SONG NAME: ")
+        print(f"{Serialize.full_track(song).track.subtitle} - {Serialize.full_track(song).track.title}")
+    else:
+        print("Song could not be identified.")
+
+async def main():
     record()
 
-#asyncio.run(main())
+    await identify()
+
+    #if FILE_PATH.is_file():
+    #    print("File exists")
+    #else:
+    #    print("No such file")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
