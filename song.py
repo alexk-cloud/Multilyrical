@@ -1,8 +1,12 @@
 import asyncio
 import sounddevice as sd
 import soundfile as sf
+import os
 from shazamio import Serialize, Shazam
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 MAX_REC_SECS = 5
 SAMPLE_RATE = 44100
@@ -29,7 +33,8 @@ async def identify():
 
     if "track" in song:
         print("SONG NAME: ")
-        print(f"{Serialize.full_track(song).track.subtitle} - {Serialize.full_track(song).track.title}")
+        print(f"{Serialize.full_track(song).track.subtitle} - {Serialize.full_track(song).track.title}\n\n")
+        print(Serialize.full_track(song).track.sections)
     else:
         print("Song could not be identified.")
 
