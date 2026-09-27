@@ -1,17 +1,17 @@
 import asyncio
 import sounddevice as sd
 import soundfile as sf
-import os
+#import os
 from shazamio import Serialize, Shazam
 from pathlib import Path
-from dotenv import load_dotenv
-
-load_dotenv()
 
 MAX_REC_SECS = 5
 SAMPLE_RATE = 44100
 FILE_NAME = "recording.wav"
+#FILE_NAME = "Ash.mp3"
 FILE_PATH = Path(FILE_NAME)
+
+track_info = None
 
 def record():
     duration = MAX_REC_SECS
@@ -32,21 +32,39 @@ async def identify():
     song = await shazam.recognize(FILE_NAME)
 
     if "track" in song:
-        print("SONG NAME: ")
-        print(f"{Serialize.full_track(song).track.subtitle} - {Serialize.full_track(song).track.title}\n\n")
-        print(Serialize.full_track(song).track.sections)
+        track_info = Serialize.full_track(song)
+        return track_info
     else:
         print("Song could not be identified.")
+        return None
+
+def display_info(track_info):
+    if track_info is not None:
+        artist = track_info.track.subtitle
+        title = track_info.track.title
+        album = None
+        year = None
+        label = None
+        
+        print("-" * 50)
+        print(f"SONG NAME: {artist} - {title}")
+        print("-" * 50)
+
+        for section in track_info.track.sections:
+            if section.type == "SONG":
+                for metadata in section.metadata:
+                    if metadata.title == "Album":
+                        album = metadata.text
+                    if metadata.title == "Released":
+                        year = metadata.text
+                    if metadata.title == "Label":
+                        label = metadata.text
+
+        print(f"Album: {album}")
+        print(f"Released: {year}")
+        print(f"Label: {label}")
 
 async def main():
     record()
-
-    await identify()
-
-    #if FILE_PATH.is_file():
-    #    print("File exists")
-    #else:
-    #    print("No such file")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    track_info = await identify()
+    display_info(track_info)

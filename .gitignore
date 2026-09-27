@@ -4,3 +4,5 @@
 /recording.wav
 recording.wav
 .env
+__pycache__/lyric.cpython-312.pyc
+__pycache__/song.cpython-312.pyc

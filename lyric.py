@@ -18,10 +18,11 @@ def translate(text: str | list[str],
 
     for result in results:
         if "detectedSourceLanguage" in result:
-            print(f"Detected source language: {result['detectedSourceLanguage']}")
+            print(f"\nDetected source language: {result['detectedSourceLanguage']}")
+        else:
+            print("\nCould not detect source language.")
 
         print(f"Input text: {result['input']}")
-        print(f"Translated text: {result['translatedText']}")
-        print()
+        print(f"Translated text: {result['translatedText']}\n")
 
     return results
