@@ -12,6 +12,8 @@ FILE_NAME = "recording.wav"
 FILE_PATH = Path(FILE_NAME)
 
 track_info = None
+artist = None
+title = None
 
 def record():
     duration = MAX_REC_SECS
@@ -40,7 +42,9 @@ async def identify():
 
 def display_info(track_info):
     if track_info is not None:
+        global artist
         artist = track_info.track.subtitle
+        global title 
         title = track_info.track.title
         album = None
         year = None
@@ -64,7 +68,10 @@ def display_info(track_info):
         print(f"Released: {year}")
         print(f"Label: {label}")
 
-async def main():
-    record()
-    track_info = await identify()
-    display_info(track_info)
+def get_artist():
+    global artist
+    return artist
+
+def get_title():
+    global title
+    return title
