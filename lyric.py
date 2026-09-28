@@ -1,3 +1,5 @@
+import requests
+
 def translate(text: str | list[str], 
             orig_lang: str | None = None, 
             target_lang: str = "en"
@@ -26,3 +28,22 @@ def translate(text: str | list[str],
         print(f"Translated text: {result['translatedText']}\n")
 
     return results
+
+def get_lyrics(title, artist):
+    url = "https://lrclib.net/api/search"
+
+    params = {
+        "track_name": title,
+        "artist_name": artist
+    }
+
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+
+    results = response.json()
+
+    if not results:
+        print("Lyrics not found.")
+        return None
+
+    return results[0]
