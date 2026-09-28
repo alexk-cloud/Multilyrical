@@ -12,7 +12,7 @@ async def main():
 
     lyrics = l.get_lyrics(title, artist)
 
-    target_lang: str = input("Enter target language: ")
+    target_lang = l.choose_lang()
 
     translated = l.translate(lyrics["plainLyrics"], target_lang=target_lang)
 
@@ -20,7 +20,7 @@ async def main():
     print(f"{lyrics["plainLyrics"]}\n")
 
     print("*" * 50)
-    print(translated[0]["translatedText"])
+    print(f"\n{translated[0]["translatedText"]}")
 
 if __name__ == "__main__":
     asyncio.run(main())
