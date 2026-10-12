@@ -1,6 +1,8 @@
 import asyncio
-import song as s
-import lyric as l
+import src.Multilyrical.song as s
+import src.Multilyrical.lyric as l
+
+# TODO: make a test main file
 
 async def main():
     s.record()
