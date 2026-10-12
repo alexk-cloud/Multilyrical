@@ -2,7 +2,7 @@ import asyncio
 import song as s
 import lyric as l
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
@@ -29,6 +29,18 @@ def id():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/results")
+def results():
+    artist = request.args.get("artist", "")
+    title = request.args.get("title", "")
+
+    return render_template(
+        "results.html",
+        artist=artist,
+        title=title
+    )
+                              
 
 if __name__ == "__main__":
     app.run(debug=True)

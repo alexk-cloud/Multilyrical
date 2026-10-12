@@ -19,7 +19,12 @@ async function idSong() {
             throw new Error(data.error || "Song identification failed.");
         }
 
-        result.textContent = `${data.artist} - ${data.title}`;
+        const params = new URLSearchParams({
+            artist: data.artist,
+            title: data.title
+        })
+
+        window.location.href = `/results?${params.toString()}`;
         
     } catch (error) {
         document.getElementById("song-result").textContent = 

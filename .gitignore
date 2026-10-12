@@ -6,3 +6,4 @@ recording.wav
 .env
 __pycache__/lyric.cpython-312.pyc
 __pycache__/song.cpython-312.pyc
+src/Multilyrical/__pycache__/app.cpython-312.pyc
