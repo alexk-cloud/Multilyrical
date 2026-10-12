@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title> Multilyrical </title>
+    </head>
+
+    <body>
+        <h1> Multilyrical </h1>
+        <h3> Play or a search for a song! </h3>
+        <div class="song-finder">
+            <button id="song-identify" style=" width: 100px; height: 60px">
+                Identify song
+            </button>
+
+            <br><br>
+
+            <input type="text" id="song-search" placeholder="Search for a song...">
+
+            <br>
+            
+            <p id="song-result"> No song identified yet. </p>
+        </div>
+    </body>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</html>
