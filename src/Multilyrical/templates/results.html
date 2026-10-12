@@ -11,12 +11,18 @@
     <h2> {{ title }} </h2>
     <h3> {{ artist }}</h3>
 
-    <h3> Original Lyrics </h3>
-    <p style="white-space: pre-wrap;"> {{ lyrics }} </p>
+    <h3> Lyrics </h3>
 
-    <h3> Translated Lyrics </h3>
-    <p style="white-space: pre-wrap;"> {{ translated }} </p>
+    {% if lyrics %}
+        <div style="white-space: pre-line;"> {{ lyrics }} </div>
+    
+    {% else %}
+        <p> {{ error }} </p>
 
+    {% endif %}
+    
+    <br>
+    
     <a href="/"> Back Home </a>
 </body>
 

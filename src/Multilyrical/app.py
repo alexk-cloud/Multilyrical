@@ -35,10 +35,29 @@ def results():
     artist = request.args.get("artist", "")
     title = request.args.get("title", "")
 
+    lyrics = None
+    error = None
+
+    try:
+        track = l.get_lyrics(title, artist)
+
+        if track:
+            lyrics = track.get("plainLyrics")
+
+            if not lyrics:
+                error = "No plain lyrics available for this song."
+        else:
+            error = "Lyrics could not be found."
+    except Exception as e:
+        print(f"Lyrics lookup failed: {e}")
+        error = "Can't retrieve lyrics."
+
     return render_template(
         "results.html",
         artist=artist,
-        title=title
+        title=title,
+        lyrics=lyrics,
+        error=error
     )
                               
 
