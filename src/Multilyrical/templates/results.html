@@ -6,24 +6,47 @@
   </head>
 
   <body>
-    <h1>Song Results</h1>
+    <div class="song-info">
+        <h1>Song Results</h1>
 
-    <h2>{{ title }}</h2>
-    <h3>{{ artist }}</h3>
+        <h2>{{ title }}</h2>
+        <h3>{{ artist }}</h3>
+    </div>
+    
+    <div class="lyrics">
+        <h3>Lyrics</h3>
 
-    <h3>Lyrics</h3>
+        {% if lyrics %}
 
-    {% if lyrics %}
-    <!--<div style="white-space: pre-line;"> {{ lyrics }} </div> -->
-    {% for line in lyrics %}
-    <div>{{ line }}</div>
-    #TODO: add another loop for translated lyrics {% endfor %} {% else %}
-    <p>{{ error }}</p>
+        <!--<div style="white-space: pre-line;"> {{ lyrics }} </div> -->
 
-    {% endif %}
+            {% for line in lyrics %}
+                <div>{{ line }}</div>
+            {% endfor %} 
 
+        {% else %}
+            <p>{{ error }}</p>
+        {% endif %}
+    </div>
+    
+    <form method="POST">
+        <input type="hidden" name="artist" value="{{ artist }}">
+        <input type="hidden" name="title" value="{{ title }}">
+
+        <label for="target_lang">Target language:</label>
+
+        <select name="target_lang" id="target_lang">
+            {% for lang in langs %}
+                <option value="{{ lang.lang }}">
+                    {{ lang.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Translate</button>
+    </form>
     <br />
 
-    <a href="/"> Back Home </a>
+    <a href="/">Back Home</a>
   </body>
 </html>

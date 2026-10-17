@@ -61,3 +61,6 @@ def choose_lang():
     selected = languages[choice - 1]
 
     return selected["language"]
+
+def get_langs():
+    return tr.get_languages(target_language="en")

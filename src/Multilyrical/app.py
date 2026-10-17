@@ -30,19 +30,28 @@ def id():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/results")
+@app.route("/results", methods=["GET", "POST"])
 def results():
-    artist = request.args.get("artist", "")
-    title = request.args.get("title", "")
+    artist = request.args.get("artist") or request.form.get("artist", "")
+    title = request.args.get("title") or request.form.get("title", "")
 
     lyrics = None
+    translated_lyrics = None
     error = None
 
     try:
         lyrics = l.get_lyrics(title, artist)
 
         if not lyrics:
-            error = "No plain lyrics available for this song."
+            error = "Lyrics could not be found."
+        elif request.method == "POST":
+            target_lang = request.form.get("target_lang", "")
+            
+            if target_lang:
+                results = l.translate(lyrics, target_lang=target_lang)
+                
+                for item in results:
+                    translated_lyrics.append(item["translatedText"])
 
         #TODO: maybe add condition and message for instrumental songs
     except Exception as e:
@@ -54,6 +63,8 @@ def results():
         artist=artist,
         title=title,
         lyrics=lyrics,
+        translated_lyrics=translated_lyrics,
+        langs=l.get_langs(),
         error=error
     )
 
