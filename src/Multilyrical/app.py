@@ -36,7 +36,7 @@ def results():
     title = request.args.get("title") or request.form.get("title", "")
 
     lyrics = None
-    translated_lyrics = None
+    translated_lyrics = []
     error = None
 
     try:
@@ -47,15 +47,16 @@ def results():
         elif request.method == "POST":
             target_lang = request.form.get("target_lang", "")
             
-            if target_lang:
+            if target_lang and lyrics:
                 results = l.translate(lyrics, target_lang=target_lang)
                 
-                for item in results:
-                    translated_lyrics.append(item["translatedText"])
+                translated_lyrics = l.translate(lyrics, target_lang=target_lang)
 
         #TODO: maybe add condition and message for instrumental songs
     except Exception as e:
-        print(f"Lyrics lookup failed: {e}")
+        import traceback
+        traceback.print_exc()
+        print(f"Lyrics lookup or translation failed: {e}")
         error = "Can't retrieve lyrics."
 
     return render_template(
@@ -63,8 +64,8 @@ def results():
         artist=artist,
         title=title,
         lyrics=lyrics,
-        translated_lyrics=translated_lyrics,
         langs=l.get_langs(),
+        translated_lyrics=translated_lyrics,
         error=error
     )
 

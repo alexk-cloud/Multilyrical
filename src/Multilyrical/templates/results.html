@@ -6,12 +6,30 @@
   </head>
 
   <body>
+
     <div class="song-info">
         <h1>Song Results</h1>
 
         <h2>{{ title }}</h2>
         <h3>{{ artist }}</h3>
     </div>
+
+    <form method="POST">
+        <input type="hidden" name="artist" value="{{ artist }}">
+        <input type="hidden" name="title" value="{{ title }}">
+
+        <label for="target_lang">Target language:</label>
+
+        <select name="target_lang" id="target_lang">
+            {% for lang in langs %}
+                <option value="{{ lang.language }}">
+                    {{ lang.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Translate</button>
+    </form>
     
     <div class="lyrics">
         <h3>Lyrics</h3>
@@ -22,30 +40,19 @@
 
             {% for line in lyrics %}
                 <div>{{ line }}</div>
+
+                {% if translated_lyrics and loop.index0 < translated_lyrics|length%}
+                        <br>
+                        <div>{{ translated_lyrics[loop.index0] }}</div>
+                {% endif %}
             {% endfor %} 
 
         {% else %}
             <p>{{ error }}</p>
         {% endif %}
     </div>
-    
-    <form method="POST">
-        <input type="hidden" name="artist" value="{{ artist }}">
-        <input type="hidden" name="title" value="{{ title }}">
 
-        <label for="target_lang">Target language:</label>
-
-        <select name="target_lang" id="target_lang">
-            {% for lang in langs %}
-                <option value="{{ lang.lang }}">
-                    {{ lang.name }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <button type="submit">Translate</button>
-    </form>
-    <br />
+    <br>
 
     <a href="/">Back Home</a>
   </body>

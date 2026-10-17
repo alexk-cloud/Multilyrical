@@ -20,7 +20,7 @@ def translate(text: str | list[str],
         format_="text"
     )
 
-    return results.splitlines()
+    return [item["translatedText"] for item in results]
 
 def get_lyrics(title, artist):
     lyrics_list = []
