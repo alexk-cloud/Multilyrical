@@ -1,29 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title> Multilyrical - Results </title>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Multilyrical - Results</title>
+  </head>
 
-<body>
-    <h1> Song Results </h1>
+  <body>
+    <h1>Song Results</h1>
 
-    <h2> {{ title }} </h2>
-    <h3> {{ artist }}</h3>
+    <h2>{{ title }}</h2>
+    <h3>{{ artist }}</h3>
 
-    <h3> Lyrics </h3>
+    <h3>Lyrics</h3>
 
     {% if lyrics %}
-        <div style="white-space: pre-line;"> {{ lyrics }} </div>
-    
-    {% else %}
-        <p> {{ error }} </p>
+    <!--<div style="white-space: pre-line;"> {{ lyrics }} </div> -->
+    {% for line in lyrics %}
+    <div>{{ line }}</div>
+    #TODO: add another loop for translated lyrics {% endfor %} {% else %}
+    <p>{{ error }}</p>
 
     {% endif %}
-    
-    <br>
-    
-    <a href="/"> Back Home </a>
-</body>
 
+    <br />
+
+    <a href="/"> Back Home </a>
+  </body>
 </html>

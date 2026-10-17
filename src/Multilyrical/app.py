@@ -39,15 +39,12 @@ def results():
     error = None
 
     try:
-        track = l.get_lyrics(title, artist)
+        lyrics = l.get_lyrics(title, artist)
 
-        if track:
-            lyrics = track.get("plainLyrics")
+        if not lyrics:
+            error = "No plain lyrics available for this song."
 
-            if not lyrics:
-                error = "No plain lyrics available for this song."
-        else:
-            error = "Lyrics could not be found."
+        #TODO: maybe add condition and message for instrumental songs
     except Exception as e:
         print(f"Lyrics lookup failed: {e}")
         error = "Can't retrieve lyrics."
@@ -59,7 +56,6 @@ def results():
         lyrics=lyrics,
         error=error
     )
-                              
 
 if __name__ == "__main__":
     app.run(debug=True)

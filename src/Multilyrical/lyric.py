@@ -20,9 +20,10 @@ def translate(text: str | list[str],
         format_="text"
     )
 
-    return results
+    return results.splitlines()
 
 def get_lyrics(title, artist):
+    lyrics_list = []
     url = "https://lrclib.net/api/search"
 
     params = {
@@ -33,13 +34,21 @@ def get_lyrics(title, artist):
     response = requests.get(url, params=params)
     response.raise_for_status()
 
+    # the json has a boolean "instrumental" key, which could be used to display a message saying there's no lyrics
+    # there's also a "duration" key i could use
     results = response.json()
 
     if not results:
         print("Lyrics not found.")
         return None
 
-    return results[0]
+    # put plain lyrics into lyrics list, then separate by new lines
+    plain_lyrics = results[0].get("plainLyrics")
+    lyrics_list = plain_lyrics.splitlines()
+    
+    #return results[0]
+
+    return lyrics_list
 
 def choose_lang():
     languages = tr.get_languages(target_language="en")
