@@ -3,6 +3,7 @@ import song as s
 import lyric as l
 
 from flask import Flask, render_template, jsonify, request
+from pathlib import Path
 
 app = Flask(__name__)
 
@@ -15,6 +16,10 @@ def id():
     try:
         s.record()
         track_info = asyncio.run(s.identify())
+
+        # delete recording once song recognition is done
+        FILE_PATH = Path("recording.wav")
+        FILE_PATH.unlink(missing_ok=True)
 
         if track_info is None:
             return jsonify({"error": "Song could not be identified."}), 404
