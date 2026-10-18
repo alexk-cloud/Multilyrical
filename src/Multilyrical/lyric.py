@@ -22,6 +22,9 @@ def translate(text: str | list[str],
 
     return [item["translatedText"] for item in results]
 
+def get_langs():
+    return tr.get_languages(target_language="en")
+
 def get_lyrics(title, artist):
     lyrics_list = []
     url = "https://lrclib.net/api/search"
@@ -50,5 +53,15 @@ def get_lyrics(title, artist):
 
     return lyrics_list
 
-def get_langs():
-    return tr.get_languages(target_language="en")
+def search_songs(query):
+    url = "https://lrclib.net/api/search"
+    
+    response = requests.get(
+        url,
+        params={"q": query},
+        timeout=10
+    )
+    
+    response.raise_for_status()
+    
+    return response.json()

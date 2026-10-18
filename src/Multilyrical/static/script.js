@@ -1,5 +1,6 @@
 const songBtn = document.getElementById("song-identify");
 const searchBar = document.getElementById("song-search");
+const searchBtn = document.getElementById("search-button");
 
 async function idSong() {
     try {
@@ -35,9 +36,36 @@ async function idSong() {
     }
 }
 
-function searchSong() {
-    //TODO: write code for song search
+async function searchSong() {
+    let input = searchBar.value.trim();
+
+    if (!input) {
+        alert("Please enter a song to search for.");
+        return;
+    }
+    
+    try {
+        const response = await fetch("/search", 
+            {method: "POST", 
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ query: input })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Search attempt failed.")
+        }
+
+        console.log(data);
+    }
+    catch (error) {
+        console.error(error)
+        alert(error.message);
+    }
 }
 
 songBtn.addEventListener("click", idSong);
-searchBar.addEventListener("input", searchSong);
+searchBtn.addEventListener("click", searchSong);

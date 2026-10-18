@@ -77,5 +77,18 @@ def results():
         error=error
     )
 
+@app.route("/search", methods=["POST"])
+def search():
+    query = request.json.get("query", "").strip()
+    
+    if not query:
+        return jsonify({"error": "Enter a song to search for."})
+    
+    try:
+        results = l.search_songs(query)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)
