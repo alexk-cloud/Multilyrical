@@ -59,8 +59,6 @@ def results():
 
         #TODO: maybe add condition and message for instrumental songs
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         print(f"Lyrics lookup or translation failed: {e}")
         error = "Can't retrieve lyrics."
 
