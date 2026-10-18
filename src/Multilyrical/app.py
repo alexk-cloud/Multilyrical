@@ -26,7 +26,7 @@ def id():
 
         artist = track_info.track.subtitle
         title = track_info.track.title
-        
+    
         return jsonify({
             "artist": artist,
             "title": title
@@ -39,7 +39,12 @@ def id():
 def results():
     artist = request.args.get("artist") or request.form.get("artist", "")
     title = request.args.get("title") or request.form.get("title", "")
-
+    
+    song_info = s.get_info()
+    
+    album = song_info[0]
+    year = song_info[1]
+    
     lyrics = None
     translated_lyrics = []
     error = None
@@ -53,8 +58,6 @@ def results():
             target_lang = request.form.get("target_lang", "")
             
             if target_lang and lyrics:
-                results = l.translate(lyrics, target_lang=target_lang)
-                
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
 
         #TODO: maybe add condition and message for instrumental songs
@@ -66,6 +69,8 @@ def results():
         "results.html",
         artist=artist,
         title=title,
+        album=album,
+        year=year,
         lyrics=lyrics,
         langs=l.get_langs(),
         translated_lyrics=translated_lyrics,
