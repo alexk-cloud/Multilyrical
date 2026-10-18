@@ -25,7 +25,8 @@
 
         <select name="target_lang" id="target_lang">
             {% for lang in langs %}
-                <option value="{{ lang.language }}">
+                <option value="{{ lang.language }}"
+                    {% if lang.language == target_lang %}selected{% endif %}>
                     {{ lang.name }}
                 </option>
             {% endfor %}

@@ -81,6 +81,7 @@ def get_title():
 
 def get_info():
     # album, release year
+    global track_info
     global album
     global year
     info = []

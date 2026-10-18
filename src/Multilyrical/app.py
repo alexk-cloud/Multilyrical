@@ -39,6 +39,7 @@ def id():
 def results():
     artist = request.args.get("artist") or request.form.get("artist", "")
     title = request.args.get("title") or request.form.get("title", "")
+    target_lang = request.form.get("target_lang", "en")
     
     song_info = s.get_info()
     
@@ -55,8 +56,6 @@ def results():
         if not lyrics:
             error = "Lyrics could not be found."
         elif request.method == "POST":
-            target_lang = request.form.get("target_lang", "")
-            
             if target_lang and lyrics:
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
 
@@ -74,6 +73,7 @@ def results():
         lyrics=lyrics,
         langs=l.get_langs(),
         translated_lyrics=translated_lyrics,
+        target_lang=target_lang,
         error=error
     )
 
