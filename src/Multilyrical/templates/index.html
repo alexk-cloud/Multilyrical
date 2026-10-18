@@ -15,10 +15,16 @@
 
             <br><br>
 
-            <input type="text" id="song-search" placeholder="Search for a song...">
-            <button id="search-button">Search</button>
-
-            <br>
+            <form action="/search" method="POST">
+                <input
+                    type="text"
+                    name="query"
+                    id="song-search"
+                    placeholder="Search for a song..."
+                    required
+                >
+                <button id="search-button">Search</button>
+            </form>
             
             <p id="song-result"> No song identified yet. </p>
         </div>

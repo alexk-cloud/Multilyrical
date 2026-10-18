@@ -36,6 +36,7 @@ async function idSong() {
     }
 }
 
+/*
 async function searchSong() {
     let input = searchBar.value.trim();
 
@@ -66,6 +67,7 @@ async function searchSong() {
         alert(error.message);
     }
 }
+*/
 
 songBtn.addEventListener("click", idSong);
-searchBtn.addEventListener("click", searchSong);
+//searchBtn.addEventListener("click", searchSong);

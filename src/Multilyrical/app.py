@@ -79,16 +79,66 @@ def results():
 
 @app.route("/search", methods=["POST"])
 def search():
-    query = request.json.get("query", "").strip()
+    query = ""
     
-    if not query:
-        return jsonify({"error": "Enter a song to search for."})
+    if request.method == "POST":
+        query = request.form.get("query", "").strip()
     
-    try:
-        results = l.search_songs(query)
-        return jsonify(results)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    results = []
+    error = None
+    
+    if query: 
+        try:
+            results = l.search_songs(query)
+            
+            if not results:
+                error = "No matching songs found."
+        except Exception as e:
+            print(f"Song search failed: {e}")
+            error = "Could not search for songs."
+    
+    return render_template(
+        "search_results.html",
+        query=query,
+        results=results,
+        error=error
+    )
 
+@app.route("/song/<int:song_id>", methods=["GET", "POST"])
+def results_by_id(song_id):
+    try:
+        song = l.get_song_by_id(song_id)
+        
+        lyrics = song.get("plainLyrics")
+        
+        if lyrics:
+            lyrics = lyrics.splitlines()
+        else:
+            lyrics = []
+        
+        translated_lyrics = []
+        target_lang = request.form.get("target_lang", "en")
+        
+        if request.method == "POST":
+            if target_lang and lyrics:
+                translated_lyrics = l.translate(lyrics, target_lang=target_lang)
+                
+        #FIXME method not allowed on this url when translating
+        #FIXME year not included
+        return render_template(
+            "results.html",
+            artist=song.get("artistName"),
+            title=song.get("trackName"),
+            album=song.get("albumName"),
+            lyrics=lyrics,
+            langs=l.get_langs(),
+            translated_lyrics=translated_lyrics,
+            target_lang=target_lang,
+            error=None
+        )
+    except Exception as e:
+        print(f"Failed to retrieve song: {e}")
+        return "Unable to retrieve this song's information.", 500
+            
 if __name__ == "__main__":
     app.run(debug=True)

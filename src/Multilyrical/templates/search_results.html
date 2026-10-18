@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title> Multilyrical - Search Results </title>
+    </head>
+
+    <body>
+        <h1> Search Results </h1>
+        
+        {% if error %}
+            <p> {{ error }} </p>
+        {% elif results %}
+            {% for song in results %}
+                <p> 
+                    <a href="{{ url_for('results_by_id', song_id=song.id)}}">
+                        {{ song.artistName }} - {{ song.trackName }}
+                    </a>
+                </p>
+            {% endfor %}
+        {% else %}
+            <p> No matching songs found. </p>
+        {% endif %}
+        
+        <a href="/"> Back Home </a>
+    </body>
+</html>

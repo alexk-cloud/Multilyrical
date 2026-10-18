@@ -65,3 +65,13 @@ def search_songs(query):
     response.raise_for_status()
     
     return response.json()
+
+def get_song_by_id(song_id):
+    url = f"https://lrclib.net/api/get/{song_id}"
+    
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+    
+    song = response.json()
+    
+    return song
