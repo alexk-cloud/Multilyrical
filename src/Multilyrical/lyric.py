@@ -1,7 +1,20 @@
 import requests
 from google.cloud import translate_v2 as translate
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 tr = translate.Client()
+session = requests.Session()
+retries = Retry(
+    total=2,
+    connect=2,
+    read=2,
+    backoff_factor=0.5,
+    status_forcelist=[500, 502, 503, 504],
+    allowed_methods=["GET"]
+)
+
+session.mount("https://", HTTPAdapter(max_retries=retries))
 
 def translate(text: str | list[str], 
             orig_lang: str | None = None, 
@@ -34,7 +47,7 @@ def get_lyrics(title, artist):
         "artist_name": artist
     }
 
-    response = requests.get(url, params=params)
+    response = session.get(url, params=params, timeout=(3, 8))
     response.raise_for_status()
 
     # the json has a boolean "instrumental" key, which could be used to display a message saying there's no lyrics
@@ -56,10 +69,10 @@ def get_lyrics(title, artist):
 def search_songs(query):
     url = "https://lrclib.net/api/search"
     
-    response = requests.get(
+    response = session.get(
         url,
         params={"q": query},
-        timeout=10
+        timeout=(3, 8)
     )
     
     response.raise_for_status()
@@ -69,7 +82,7 @@ def search_songs(query):
 def get_song_by_id(song_id):
     url = f"https://lrclib.net/api/get/{song_id}"
     
-    response = requests.get(url, timeout=10)
+    response = session.get(url, timeout=(3, 8))
     response.raise_for_status()
     
     song = response.json()
