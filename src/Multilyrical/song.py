@@ -1,9 +1,10 @@
 import asyncio
 import sounddevice as sd
 import soundfile as sf
-#import os
+import re
 from shazamio import Serialize, Shazam
 from pathlib import Path
+from coverpy import CoverPy, NoResultsException
 
 MAX_REC_SECS = 5
 SAMPLE_RATE = 44100
@@ -70,6 +71,8 @@ def display_info(track_info):
         print(f"Album: {album}")
         print(f"Released: {year}")
         print(f"Label: {label}")
+        
+        print(f"\nRAW DATA:\n{track_info}")
 
 def get_artist():
     global artist
@@ -98,3 +101,32 @@ def get_info():
     info.append(year)
     
     return info
+
+def clean_title(title):
+    title = re.sub(
+        r"\s*\((?:[^)]*\bcover\b[^)]*|[^)]*\bkaraoke\b[^)]*)\)",
+        "",
+        title,
+        flags=re.IGNORECASE
+    )
+    
+    return title.strip()
+    
+def get_song_art(artist, title):
+    if artist is None or title is None:
+        print("Artist and/or title is None.")
+        return
+    
+    title = clean_title(title)
+    client = CoverPy()
+    art = None
+    
+    try:
+        result = client.get_cover(f"{artist} {title}")
+    except NoResultsException:
+        print("No cover results found.")
+    else:
+        art = result.artwork(1200)
+        return art
+            
+        

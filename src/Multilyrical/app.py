@@ -26,10 +26,12 @@ def id():
 
         artist = track_info.track.subtitle
         title = track_info.track.title
+        image_url = s.get_song_art(artist, title)
     
         return jsonify({
             "artist": artist,
-            "title": title
+            "title": title,
+            "image_url": image_url
         })
 
     except Exception as e:
@@ -45,6 +47,7 @@ def results():
     
     album = song_info[0]
     year = song_info[1]
+    image_url = s.get_song_art(artist, title)
     
     lyrics = None
     translated_lyrics = []
@@ -69,6 +72,7 @@ def results():
         artist=artist,
         title=title,
         album=album,
+        image_url=image_url,
         year=year,
         lyrics=lyrics,
         langs=l.get_langs(),
@@ -108,6 +112,10 @@ def search():
 def results_by_id(song_id):
     try:
         song = l.get_song_by_id(song_id)
+        artist = song.get("artistName")
+        title = song.get("trackName")
+        album = song.get("albumName")
+        image_url = s.get_song_art(artist, title)
         
         lyrics = song.get("plainLyrics")
         
@@ -122,14 +130,15 @@ def results_by_id(song_id):
         if request.method == "POST":
             if target_lang and lyrics:
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
-                
-        #FIXME method not allowed on this url when translating
-        #FIXME year not included
+        
+        #FIXME: year not included
+        #FIXME: some songs return "Failed to retrieve song: 'collectionName'"
         return render_template(
             "results.html",
-            artist=song.get("artistName"),
-            title=song.get("trackName"),
-            album=song.get("albumName"),
+            artist=artist,
+            title=title,
+            album=album,
+            image_url=image_url,
             lyrics=lyrics,
             langs=l.get_langs(),
             translated_lyrics=translated_lyrics,
