@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recently Viewed - Multilyrical</title>
+</head>
+<body>
+    <h1>Recently Viewed Songs</h1>
+
+    {% if recent_songs %}
+        {% for song in recent_songs %}
+            <div>
+                <h3>
+                    <a href="{{ url_for('results_by_id', song_id=song.id) }}">
+                        {{ song.title }}
+                    </a>
+                </h3>
+
+                <p>{{ song.artist }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't viewed any songs yet.</p>
+    {% endif %}
+
+    <a href="/">Back Home</a>
+</body>
+</html>

@@ -1,11 +1,14 @@
 import asyncio
 import song as s
 import lyric as l
+import os
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
 from pathlib import Path
 
+FLASK_KEY = os.getenv("FLASK_KEY")
 app = Flask(__name__)
+app.secret_key = FLASK_KEY
 
 @app.route("/")
 def home():
@@ -119,6 +122,22 @@ def results_by_id(song_id):
         
         lyrics = song.get("plainLyrics")
         
+        recent_songs = session.get("recent_songs", [])
+        recent_songs = [
+            item for item in recent_songs
+            if item["id"] != song_id
+        ]   
+        
+        recent_songs.insert(0, {
+            "id": song_id,
+            "title": song.get("trackName"),
+            "artist": song.get("artistName"),
+            "album": song.get("albumName")
+        })
+
+        #keep only the 10 most recent songs
+        session["recent_songs"] = recent_songs[:10]
+        
         if lyrics:
             lyrics = lyrics.splitlines()
         else:
@@ -148,6 +167,15 @@ def results_by_id(song_id):
     except Exception as e:
         print(f"Failed to retrieve song: {e}")
         return "Unable to retrieve this song's information.", 500
-            
+
+@app.route("/recent")
+def recently_viewed():
+    recent_songs = session.get("recent_songs", [])
+
+    return render_template(
+        "recent.html",
+        recent_songs=recent_songs
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
