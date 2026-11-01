@@ -9,7 +9,6 @@ from coverpy import CoverPy, NoResultsException
 MAX_REC_SECS = 5
 SAMPLE_RATE = 44100
 FILE_NAME = "recording.wav"
-#FILE_NAME = "Ash.mp3"
 FILE_PATH = Path(FILE_NAME)
 
 track_info = None
@@ -44,6 +43,7 @@ async def identify():
     
     return track_info
 
+"""
 def display_info(track_info):
     if track_info is not None:
         global artist
@@ -73,6 +73,7 @@ def display_info(track_info):
         print(f"Label: {label}")
         
         print(f"\nRAW DATA:\n{track_info}")
+"""
 
 def get_artist():
     global artist
@@ -111,7 +112,7 @@ def clean_title(title):
     )
     
     return title.strip()
-    
+
 def get_song_art(artist, title):
     if artist is None or title is None:
         print("Artist and/or title is None.")
@@ -128,5 +129,3 @@ def get_song_art(artist, title):
     else:
         art = result.artwork(1200)
         return art
-            
-        

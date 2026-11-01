@@ -46,6 +46,12 @@ def results():
     title = request.args.get("title") or request.form.get("title", "")
     target_lang = request.form.get("target_lang", "en")
     
+    song = l.get_song_data(title, artist)
+    song_id = None
+    
+    if song:
+        song_id = song.get("id")
+
     song_info = s.get_info()
     
     album = song_info[0]
@@ -57,7 +63,8 @@ def results():
     error = None
 
     try:
-        lyrics = l.get_lyrics(title, artist)
+        #lyrics = l.get_lyrics(title, artist)
+        lyrics = song.get("plainLyrics", "").splitlines()
 
         if not lyrics:
             error = "Lyrics could not be found."
@@ -72,6 +79,7 @@ def results():
 
     return render_template(
         "results.html",
+        song_id=song_id,
         artist=artist,
         title=title,
         album=album,
@@ -150,10 +158,10 @@ def results_by_id(song_id):
             if target_lang and lyrics:
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
         
-        #FIXME: year not included
         #FIXME: some songs return "Failed to retrieve song: 'collectionName'"
         return render_template(
             "results.html",
+            song_id=song_id,
             artist=artist,
             title=title,
             album=album,
@@ -176,6 +184,10 @@ def recently_viewed():
         "recent.html",
         recent_songs=recent_songs
     )
+    
+@app.route("/saved")
+def saved():
+    return render_template("saved.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

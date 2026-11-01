@@ -38,6 +38,26 @@ def translate(text: str | list[str],
 def get_langs():
     return tr.get_languages(target_language="en")
 
+def get_song_data(title, artist):
+    url = "https://lrclib.net/api/search"
+    
+    response = session.get(
+        url,
+        params={
+            "track_name": title,
+            "artist_name": artist
+            },
+        timeout=(3, 8)
+    )
+    
+    response.raise_for_status()
+    results = response.json()
+    
+    if results:
+        return results[0]
+    
+    return None
+
 def get_lyrics(title, artist):
     lyrics_list = []
     url = "https://lrclib.net/api/search"

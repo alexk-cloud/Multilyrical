@@ -8,7 +8,7 @@
   <body>
 
     <div class="song-info">
-        <h1>Song Results</h1>
+        <h1>Song Results - Multilyrical</h1>
 
         {% if image_url %}
             <img src="{{ image_url }}" alt="Album cover for {{ title }}" width="200">
@@ -17,9 +17,6 @@
         <h2>{{ title }}</h2>
         <h3>by {{ artist }}</h3>
         <h3>on {{ album }}</h3>
-        <!-- FIXME -->
-        <!-- <h3>released in {{ year }}</h3> -->
-
     </div>
 
     <form method="POST">
@@ -61,8 +58,20 @@
         {% endif %}
     </div>
 
+    <button
+        id="save-song"
+        data-id="{{ song_id }}"
+        data-title="{{ title }}"
+        data-artist="{{ artist }}"
+        data-album="{{ album }}"
+        data-art="{{ image_url }}">
+        Add to Favorites
+    </button>
+
     <br>
 
     <a href="/">Back Home</a>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
 </html>
