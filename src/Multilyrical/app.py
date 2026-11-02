@@ -47,10 +47,16 @@ def results():
     target_lang = request.form.get("target_lang", "en")
     
     song = l.get_song_data(title, artist)
+    
+    if song is None:
+        return render_template(
+            "error.html",
+            error="Could not get song data."
+        )
+    
     song_id = None
     
-    if song:
-        song_id = song.get("id")
+    song_id = song.get("id")
 
     song_info = s.get_info()
     
@@ -105,9 +111,13 @@ def search():
     if query: 
         try:
             results = l.search_songs(query)
-            
-            if not results:
-                error = "No matching songs found."
+
+            if results is None:
+                error = "Song search is temporarily unavailable. Please try again later."
+                return render_template(
+                    "error.html",
+                    error=error
+                ), 503
         except Exception as e:
             print(f"Song search failed: {e}")
             error = "Could not search for songs."
@@ -123,6 +133,13 @@ def search():
 def results_by_id(song_id):
     try:
         song = l.get_song_by_id(song_id)
+        
+        if song is None:
+            return render_template(
+                "error.html",
+                error="Unable to retrieve this song right now. Please try again later."
+            ), 503
+            
         artist = song.get("artistName")
         title = song.get("trackName")
         album = song.get("albumName")

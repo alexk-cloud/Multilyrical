@@ -116,7 +116,7 @@ function showSaved() {
                 JSON.stringify(saved)
             );
 
-            displaySaved();
+            showSaved();
         });
 
         card.appendChild(removeBtn);
