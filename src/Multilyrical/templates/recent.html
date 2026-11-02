@@ -9,23 +9,33 @@
     <body>
         {% include 'header.html' %}
 
-        <h1>Recently Viewed Songs</h1>
+        <h1 id="recents-title">Recently Viewed Songs</h1>
 
-        {% if recent_songs %}
+        <section id="recent-songs">
+            {% if recent_songs %}
             {% for song in recent_songs %}
-                <div>
+                <div id="song-card">
                     <h3>
-                        <a href="{{ url_for('results_by_id', song_id=song.id) }}">
+                        <a href="{{ url_for('results_by_id', song_id=song.id) }}" id="song-link">
+                            {% if song.image_url %}
+                                <img 
+                                    src="{{ song.image_url }}" 
+                                    alt="Album cover for {{ title }}"
+                                    id="album-art"
+                                >
+                            {% endif %}
                             {{ song.title }}
                         </a>
+                        <p id="artist-name">by {{ song.artist }}</p>
                     </h3>
 
-                    <p>{{ song.artist }}</p>
+                    
                 </div>
             {% endfor %}
-        {% else %}
-            <p>You haven't viewed any songs yet.</p>
-        {% endif %}
 
+            {% else %}
+                <p>You haven't viewed any songs yet.</p>
+            {% endif %}
+        </section>
     </body>
 </html>

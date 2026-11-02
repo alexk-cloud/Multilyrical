@@ -4,9 +4,13 @@
   font-family: "Poppins", sans-serif;
 }
 
-#nav-logo {
+img {
+    box-shadow: 2px 3px 20px black;
+}
+
+#nav-logo, #recents-title, #song-link, #artist-name {
   font-weight: 700;
-  font-size: 36px;
+  font-size: 40px;
   color: white;
   text-decoration: none;
   text-shadow: 4px 3px black;
@@ -25,7 +29,7 @@
   padding-top: 30px;
 }
 
-.home-bar:hover {
+.home-bar:hover, #song-card:hover, #user-activity a:hover {
   transform: translateY(-6px);
   transition: transform 0.2s;
 }
@@ -74,7 +78,7 @@ body {
   -webkit-text-stroke: 0.5px black;
 }
 
-#song-identify:hover {
+#song-identify:hover, #search-button:hover, #user-activity a:hover {
   box-shadow: 0 3px 20px #523fbd;
   transform: translateY(-3px);
   transition: transform 0.2s;
@@ -123,12 +127,6 @@ body {
 }
 */
 
-#search-button:hover {
-  box-shadow: 0 3px 20px #3621a9;
-  transform: translateY(-3px);
-  transition: transform 0.2s;
-}
-
 #user-activity {
   display: flex;
   gap: 5px;
@@ -152,18 +150,13 @@ body {
   -webkit-text-stroke: 0.5px black;
 }
 
-#user-activity a:hover {
-  box-shadow: 0 3px 20px #523fbd;
-  transform: translateY(-3px);
-  transition: transform 0.2s;
-}
-
 /* results.html */
-
 #album-art {
-  padding: 15px;
   width: 200px;
+  margin-top: 15px;
+  margin-bottom: 5px;
 }
+
 #song-info {
   display: flex;
   flex-direction: column;
@@ -240,4 +233,35 @@ body {
 #translated-lyrics {
   font-style: italic;
   font-weight: 700;
+}
+
+/* recent.html */
+#recent-songs {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+#song-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+#song-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-size: 20px;
+}
+
+#artist-name {
+  margin-top: 0;
+  font-size: 16px;
 }

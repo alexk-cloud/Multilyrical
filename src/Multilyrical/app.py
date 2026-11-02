@@ -157,7 +157,8 @@ def results_by_id(song_id):
             "id": song_id,
             "title": song.get("trackName"),
             "artist": song.get("artistName"),
-            "album": song.get("albumName")
+            "album": song.get("albumName"),
+            "image_url": image_url
         })
 
         #keep only the 10 most recent songs
