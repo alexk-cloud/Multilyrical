@@ -32,7 +32,7 @@ async function idSong() {
             `Error: ${error.message}`;
     } finally {
         songBtn.disabled = false;
-        songBtn.textContent = "Identify song";
+        songBtn.textContent = "Identify Song";
     }
 }
 

@@ -3,6 +3,8 @@ from google.cloud import translate_v2 as translate
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+lyrics_cache = {}
+
 tr = translate.Client()
 session = requests.Session()
 retries = Retry(
@@ -59,32 +61,62 @@ def get_song_data(title, artist):
     return None
 
 def get_lyrics(title, artist):
-    lyrics_list = []
     url = "https://lrclib.net/api/search"
 
+    cache_key = (title.lower(), artist.lower())
+    
+    if cache_key in lyrics_cache:
+        print("Using cached lyrics.")
+        return lyrics_cache[cache_key]
+    
     params = {
         "track_name": title,
         "artist_name": artist
     }
+    
+    try: 
+        response = session.get(url, params=params, timeout=(3, 8))
+        response.raise_for_status()
 
-    response = session.get(url, params=params, timeout=(3, 8))
-    response.raise_for_status()
+        # the json has a boolean "instrumental" key, which could be used to display a message saying there's no lyrics
+        # there's also a "duration" key i could use
+        results = response.json()
 
-    # the json has a boolean "instrumental" key, which could be used to display a message saying there's no lyrics
-    # there's also a "duration" key i could use
-    results = response.json()
+        if not results:
+            print("Lyrics not found.")
+            return None
 
-    if not results:
-        print("Lyrics not found.")
+        # put plain lyrics into lyrics list, then separate by new lines
+        plain_lyrics = results[0].get("plainLyrics")
+        
+        if not plain_lyrics:
+            print("No plain lyrics available.")
+            return None
+        
+        lyrics_list = plain_lyrics.splitlines()
+        lyrics_cache[cache_key] = lyrics_list
+
+        return lyrics_list
+    
+    except requests.exceptions.RetryError as e:
+        print(f"LRCLIB is unavailable after retries: {e}")
         return None
 
-    # put plain lyrics into lyrics list, then separate by new lines
-    plain_lyrics = results[0].get("plainLyrics")
-    lyrics_list = plain_lyrics.splitlines()
-    
-    #return results[0]
+    except requests.exceptions.Timeout:
+        print("LRCLIB request timed out.")
+        return None
 
-    return lyrics_list
+    except requests.exceptions.HTTPError as e:
+        print(f"LRCLIB returned an HTTP error: {e}")
+        return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"LRCLIB request failed: {e}")
+        return None
+
+    except ValueError as e:
+        print(f"Could not process LRCLIB response: {e}")
+        return None
 
 def search_songs(query):
     url = "https://lrclib.net/api/search"

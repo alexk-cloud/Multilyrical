@@ -66,8 +66,8 @@ def results():
         #lyrics = l.get_lyrics(title, artist)
         lyrics = song.get("plainLyrics", "").splitlines()
 
-        if not lyrics:
-            error = "Lyrics could not be found."
+        if lyrics is None:
+            error = "Lyrics could not be found. Please try again later."
         elif request.method == "POST":
             if target_lang and lyrics:
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
