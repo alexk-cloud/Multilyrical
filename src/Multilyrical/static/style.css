@@ -22,6 +22,7 @@
 
 .home-bar {
   transition: transform 0.2s ease;
+  padding-top: 30px;
 }
 
 .home-bar:hover {
@@ -48,6 +49,7 @@ body {
   margin: 0;
 }
 
+/* index.html */
 .song-finder {
   display: flex;
   flex-direction: column;
@@ -154,4 +156,88 @@ body {
   box-shadow: 0 3px 20px #523fbd;
   transform: translateY(-3px);
   transition: transform 0.2s;
+}
+
+/* results.html */
+
+#album-art {
+  padding: 15px;
+  width: 200px;
+}
+#song-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  text-shadow: 4px 3px black;
+}
+
+#song-info h3 {
+  margin: 10px;
+}
+
+#save-song {
+  font-size: 16px;
+}
+
+#song-info form {
+  padding: 20px;
+}
+
+#language-select {
+  padding-top: 15px;
+}
+
+#language-select select, button {
+  border-radius: 8px;
+  height: 30px;
+}
+
+#language-select button, #save-song {
+  background-color: #402cb0;
+  color: white;
+  height: 35px;
+  border: 2px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: -5px;
+  font-weight: 700;
+  box-shadow: 1px 5px 3px #10083d;
+  transition: transform 0.2s ease;
+  text-shadow: 2px 2px black;
+  -webkit-text-stroke: 0.5px black;
+}
+
+#language-select button:hover, #save-song:hover {
+  box-shadow: 0 3px 20px #3621a9;
+  transform: translateY(-3px);
+  transition: transform 0.2s;
+}
+
+#language-select label, #lyrics h3, #translated-lyrics {
+  font-weight: 700;
+  text-shadow: 4px 3px black;
+}
+
+#lyrics {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 20px;
+}
+
+#lyrics div {
+  text-align: center;
+  max-width: 800px;
+  overflow-wrap: anywhere;
+}
+
+#translated-lyrics {
+  font-style: italic;
+  font-weight: 700;
 }
