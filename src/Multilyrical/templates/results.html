@@ -1,11 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multilyrical - Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
 
   <body>
+    {% include 'header.html' %}
 
     <div class="song-info">
         <h1>Song Results - Multilyrical</h1>
@@ -67,11 +70,7 @@
         data-art="{{ image_url }}">
         Add to Favorites
     </button>
-
-    <br>
-
-    <a href="/">Back Home</a>
-
+    
     <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
 </html>

@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Recently Viewed Songs - Multilyrical</title>
-</head>
-<body>
-    <h1>Recently Viewed Songs</h1>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Recently Viewed Songs - Multilyrical</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        {% include 'header.html' %}
 
-    {% if recent_songs %}
-        {% for song in recent_songs %}
-            <div>
-                <h3>
-                    <a href="{{ url_for('results_by_id', song_id=song.id) }}">
-                        {{ song.title }}
-                    </a>
-                </h3>
+        <h1>Recently Viewed Songs</h1>
 
-                <p>{{ song.artist }}</p>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>You haven't viewed any songs yet.</p>
-    {% endif %}
+        {% if recent_songs %}
+            {% for song in recent_songs %}
+                <div>
+                    <h3>
+                        <a href="{{ url_for('results_by_id', song_id=song.id) }}">
+                            {{ song.title }}
+                        </a>
+                    </h3>
 
-    <a href="/">Back Home</a>
-</body>
+                    <p>{{ song.artist }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>You haven't viewed any songs yet.</p>
+        {% endif %}
+
+    </body>
 </html>
