@@ -54,14 +54,12 @@ def results():
             error="Could not get song data."
         )
     
-    song_id = None
-    
     song_id = song.get("id")
 
-    song_info = s.get_info()
-    
-    album = song_info[0]
-    year = song_info[1]
+    release_info = s.get_album_and_year()
+    album = release_info[0]
+    year = release_info[1]
+
     image_url = s.get_song_art(artist, title)
     
     lyrics = None

@@ -8,9 +8,12 @@ retries = Retry(
     connect=2,
     read=2,
     backoff_factor=1,
-    status_forcelist=[500, 502, 503, 504],
+    status_forcelist=[429, 500, 502, 503, 504],
     allowed_methods=["GET"],
     respect_retry_after_header=True
 )
 
 session.mount("https://", HTTPAdapter(max_retries=retries))
+session.headers.update({
+    "User-Agent": "Multilyrical/1.0"
+})
