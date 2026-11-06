@@ -205,5 +205,9 @@ def recently_viewed():
 def saved():
     return render_template("saved.html")
 
+@app.route("/playlists")
+def playlists():
+    return render_template("playlists.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
