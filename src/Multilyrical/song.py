@@ -19,6 +19,7 @@ album = None
 year = None
 
 song_cache = {}
+search_cache = {}
 
 def record():
     duration = MAX_REC_SECS
@@ -177,8 +178,12 @@ def get_song_data(title, artist):
         return None
 
 def search_songs(query):
+    if query in search_cache:
+        print("Using cached search results.")
+        return search_cache[query]
+
     url = "https://lrclib.net/api/search"
-    
+
     try:
         response = session.get(
             url,
@@ -187,8 +192,10 @@ def search_songs(query):
         )
         
         response.raise_for_status()
-        
-        return response.json()
+        results = response.json()
+        search_cache[query] = results
+
+        return results
     
     except requests.exceptions.RetryError as e:
         print(f"LRCLIB is unavailable after retries: {e}")
@@ -223,7 +230,7 @@ def get_song_by_id(song_id):
         
         song = response.json()
         song_cache[song_id] = song
-        
+
         return song
     
     except requests.exceptions.RetryError as e:
