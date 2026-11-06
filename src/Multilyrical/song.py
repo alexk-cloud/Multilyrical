@@ -38,16 +38,15 @@ async def identify():
     global track_info
     track_info = None
     
-    shazam = Shazam()
+    async with Shazam() as shazam:
+        song = await shazam.recognize(FILE_NAME)
 
-    song = await shazam.recognize(FILE_NAME)
-
-    if "track" in song:
-        track_info = Serialize.full_track(song)
-        return track_info
+        if "track" in song:
+            track_info = Serialize.full_track(song)
+            return track_info
     
-    print("Song could not be identified.")
-    return None
+        print("Song could not be identified.")
+        return None
 
 """
 def display_info(track_info):
@@ -137,6 +136,12 @@ def get_song_art(artist, title):
         return art
 
 def get_song_data(title, artist):
+    cache_key = (title.lower(), artist.lower())
+
+    if cache_key in song_cache:
+        print("Using cached song data.")
+        return song_cache[cache_key]
+    
     url = "https://lrclib.net/api/search"
     
     try:
