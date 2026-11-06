@@ -1,16 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <nav class="home-bar">
-            <a href="/" id="nav-logo">
-                Multilyrical
-            </a>
-        </nav>
-    </body>
-</html>
+<nav class="home-bar">
+    <a href="/" id="nav-logo">
+        Multilyrical
+    </a>
+</nav>
 
+<dialog id="app-dialog" 
+    style="
+    border: 2px solid black;
+    border-radius: 12px;
+    padding: 24px;
+    min-width: 300px;
+    max-width: 90%;
+    background: #2c1c69;
+    color: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    font-family: 'Poppins', sans-serif;
+    ">
+      <h3></h3>
+      <p></p>
+      
+      <input type="text" 
+        style=
+        "width: 100%; 
+        padding: 12px; 
+        border: 2px solid black; 
+        border-radius: 8px;
+        background: #1c1350; 
+        color: white; 
+        font-family: inherit; 
+        font-size: 14px;
+        box-sizing: border-box; 
+        margin-bottom: 16px; 
+        -webkit-text-stroke: 0.5px black;
+        display: none;
+        ">
+
+      <div 
+        style="
+        display:flex; 
+        gap:12px; 
+        justify-content:center;
+        ">
+          <button class="dialog-cancel">Cancel</button>
+          <button class="dialog-confirm">OK</button>
+      </div>
+  </dialog>
