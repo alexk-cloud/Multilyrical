@@ -46,7 +46,7 @@ def results():
     title = request.args.get("title") or request.form.get("title", "")
     target_lang = request.form.get("target_lang", "en")
     
-    song = l.get_song_data(title, artist)
+    song = s.get_song_data(title, artist)
     
     if song is None:
         return render_template(
@@ -110,7 +110,7 @@ def search():
     
     if query: 
         try:
-            results = l.search_songs(query)
+            results = s.search_songs(query)
 
             if results is None:
                 error = "Song search is temporarily unavailable. Please try again later."
@@ -132,7 +132,7 @@ def search():
 @app.route("/song/<int:song_id>", methods=["GET", "POST"])
 def results_by_id(song_id):
     try:
-        song = l.get_song_by_id(song_id)
+        song = s.get_song_by_id(song_id)
         
         if song is None:
             return render_template(

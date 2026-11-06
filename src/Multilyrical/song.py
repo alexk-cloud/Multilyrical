@@ -1,10 +1,11 @@
-import asyncio
 import sounddevice as sd
 import soundfile as sf
 import re
+import requests
 from shazamio import Serialize, Shazam
 from pathlib import Path
 from coverpy import CoverPy, NoResultsException
+from api_client import session
 
 MAX_REC_SECS = 5
 SAMPLE_RATE = 44100
@@ -16,6 +17,8 @@ artist = None
 title = None
 album = None
 year = None
+
+song_cache = {}
 
 def record():
     duration = MAX_REC_SECS
@@ -85,7 +88,7 @@ def get_title():
     global title
     return title
 
-def get_info():
+def get_album_and_year():
     # album, release year
     global track_info
     global album
@@ -131,3 +134,114 @@ def get_song_art(artist, title):
     else:
         art = result.artwork(1200)
         return art
+
+def get_song_data(title, artist):
+    url = "https://lrclib.net/api/search"
+    
+    try:
+        response = session.get(
+            url,
+            params={
+                "track_name": title,
+                "artist_name": artist
+                },
+            timeout=(3, 8)
+        )
+        
+        response.raise_for_status()
+        results = response.json()
+        
+        if results:
+            return results[0]
+        
+        return None
+    
+    except requests.exceptions.RetryError as e:
+        print(f"LRCLIB is unavailable after retries: {e}")
+        return None
+
+    except requests.exceptions.Timeout:
+        print("LRCLIB song request timed out.")
+        return None
+
+    except requests.exceptions.HTTPError as e:
+        print(f"LRCLIB returned an HTTP error: {e}")
+        return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"LRCLIB song request failed: {e}")
+        return None
+
+    except ValueError as e:
+        print(f"Could not process LRCLIB response: {e}")
+        return None
+
+def search_songs(query):
+    url = "https://lrclib.net/api/search"
+    
+    try:
+        response = session.get(
+            url,
+            params={"q": query},
+            timeout=(3, 8)
+        )
+        
+        response.raise_for_status()
+        
+        return response.json()
+    
+    except requests.exceptions.RetryError as e:
+        print(f"LRCLIB is unavailable after retries: {e}")
+        return None
+
+    except requests.exceptions.Timeout:
+        print("LRCLIB search request timed out.")
+        return None
+
+    except requests.exceptions.HTTPError as e:
+        print(f"LRCLIB returned an HTTP error: {e}")
+        return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"LRCLIB search request failed: {e}")
+        return None
+
+    except ValueError as e:
+        print(f"Could not process LRCLIB response: {e}")
+        return None
+    
+def get_song_by_id(song_id):
+    if song_id in song_cache: 
+        print("Using cached song.")
+        return song_cache[song_id]
+        
+    url = f"https://lrclib.net/api/get/{song_id}"
+    
+    try:
+        response = session.get(url, timeout=(3, 8))
+        response.raise_for_status()
+        
+        song = response.json()
+        song_cache[song_id] = song
+        
+        return song
+    
+    except requests.exceptions.RetryError as e:
+        print(f"LRCLIB is unavailable after retries: {e}")
+        return None
+
+    except requests.exceptions.Timeout:
+        print("LRCLIB request timed out.")
+        return None
+
+    except requests.exceptions.HTTPError as e:
+        print(f"LRCLIB returned an HTTP error: {e}")
+        return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to retrieve song: {e}")
+        return None
+
+    except ValueError as e:
+        print(f"Could not process LRCLIB response: {e}")
+        return None
