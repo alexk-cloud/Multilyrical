@@ -510,6 +510,34 @@ function showPlaylists() {
     });
 }
 
+async function loadArtwork() {
+    const images = document.querySelectorAll(".results-container img");
+
+    const artworkRequests = Array.from(images).map(async (img) => {
+        const artist = img.dataset.artist;
+        const title = img.dataset.title;
+
+        try {
+            const response = await fetch(
+                `/artwork?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`
+            );
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+
+            if (data.art) {
+                img.src = data.art;
+            }
+            
+        } catch (error) {
+            console.error(`Could not load artwork for ${title}:`, error);
+        }
+    });
+
+    await Promise.all(artworkRequests);
+}
+
 if (songBtn) songBtn.addEventListener("click", idSong);
 if (saveBtn) saveBtn.addEventListener("click", saveSong);
 if (savedContainer) showSaved();
@@ -518,3 +546,7 @@ if (playlistBtn) playlistBtn.addEventListener("click", async () => {
     const playlistName = await selectPlaylist();
     if (playlistName) saveToPlaylist(playlistName);
 });
+
+if (document.querySelector(".results-container")) {
+    loadArtwork();
+}

@@ -20,6 +20,7 @@ year = None
 
 song_cache = {}
 search_cache = {}
+art_cache = {}
 
 def record():
     duration = MAX_REC_SECS
@@ -119,9 +120,15 @@ def clean_title(title):
     return title.strip()
 
 def get_song_art(artist, title):
-    if artist is None or title is None:
-        print("Artist and/or title is None.")
-        return
+    if not artist or not title:
+        print("Artist and/or title is missing.")
+        return None
+
+    cache_key = (artist.lower(), title.lower())
+
+    if cache_key in art_cache:
+        print("Using cached artwork.")
+        return art_cache[cache_key]
     
     title = clean_title(title)
     client = CoverPy()
@@ -129,11 +136,21 @@ def get_song_art(artist, title):
     
     try:
         result = client.get_cover(f"{artist} {title}")
+        art = result.artwork(1200)
+
     except NoResultsException:
         print("No cover results found.")
-    else:
-        art = result.artwork(1200)
-        return art
+        
+    except KeyError as e:
+        print(f"CoverPy returned incomplete metadata: {e}")
+        art = None
+        
+    except Exception as e:
+        print(f"Artwork retrieval failed: {e}")
+        art = None
+
+    art_cache[cache_key] = art
+    return art 
 
 def get_song_data(title, artist):
     cache_key = (title.lower(), artist.lower())

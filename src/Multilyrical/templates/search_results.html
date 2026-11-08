@@ -16,14 +16,37 @@
             <p> {{ error }} </p>
         {% elif results %}
             {% for song in results %}
-                <p> 
-                    <a href="{{ url_for('results_by_id', song_id=song.id)}}">
-                        {{ song.artistName }} - {{ song.trackName }}
-                    </a>
-                </p>
+                <div class="results-container"> 
+                    <div class="results-song">
+                        <img
+                        src="{{ url_for('static', filename='default-song-image.png') }}"
+                        data-artist="{{ song.artistName }}"
+                        data-title="{{ song.trackName }}"
+                        alt="Album cover"
+                        class="results-song-art"
+                        loading="lazy"
+                        >
+                    
+                        <div class="results-song-info">
+                            <a href="{{ url_for('results_by_id', song_id=song.id)}}" 
+                            class="results-song-link">
+                                <div class="results-song-title">
+                                    {{ song.trackName }}
+                                </div>
+
+                                <div class="results-song-artist">
+                                    {{ song.artistName }} 
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
             {% endfor %}
         {% else %}
             <p> No matching songs found. </p>
         {% endif %}
+
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
     </body>
 </html>

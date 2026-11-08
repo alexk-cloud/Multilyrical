@@ -104,6 +104,7 @@ def search():
         query = request.form.get("query", "").strip()
     
     results = []
+    artwork = {}
     error = None
     
     if query: 
@@ -116,6 +117,7 @@ def search():
                     "error.html",
                     error=error
                 ), 503
+
         except Exception as e:
             print(f"Song search failed: {e}")
             error = "Could not search for songs."
@@ -124,8 +126,18 @@ def search():
         "search_results.html",
         query=query,
         results=results,
+        artwork=artwork,
         error=error
     )
+
+@app.route("/artwork")
+def get_artwork():
+    artist = request.args.get("artist")
+    title = request.args.get("title")
+
+    art = s.get_song_art(artist, title)
+
+    return jsonify({"art": art})
 
 @app.route("/song/<int:song_id>", methods=["GET", "POST"])
 def results_by_id(song_id):
