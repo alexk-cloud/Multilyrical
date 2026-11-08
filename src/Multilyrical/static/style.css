@@ -9,13 +9,17 @@ img {
   border-radius: 6px;
 }
 
-#nav-logo, .page-title, #song-link, #artist-name, .playlist-song-link {
+#nav-logo, .page-title, .song-link, .artist-name, .saved-song-link, .playlist-song-link {
   font-weight: 700;
   font-size: 40px;
   color: white;
   text-decoration: none;
   text-shadow: 4px 3px black;
   transition: text-shadow 0.2s ease;
+}
+
+.saved-song-link {
+  font-size: 20px;
 }
 
 #nav-logo:hover {
@@ -30,7 +34,7 @@ img {
   padding-top: 30px;
 }
 
-.home-bar:hover, #song-card:hover, #user-activity a:hover {
+.home-bar:hover, .song-card:hover, #user-activity a:hover {
   transform: translateY(-6px);
   transition: transform 0.2s;
 }
@@ -152,7 +156,7 @@ body {
 }
 
 /* results.html */
-#album-art {
+.album-art {
   width: 200px;
   margin-top: 15px;
   margin-bottom: 5px;
@@ -237,7 +241,7 @@ body {
 }
 
 /* recent.html */
-#recent-songs {
+#recent-songs, #saved {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -245,7 +249,7 @@ body {
   gap: 30px;
 }
 
-#song-card {
+.song-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -253,7 +257,7 @@ body {
   transition: transform 0.2s ease;
 }
 
-#song-link {
+.song-link {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -263,7 +267,7 @@ body {
   max-width: 200px;
 }
 
-#artist-name {
+.artist-name {
   margin-top: 0;
   font-size: 16px;
 }

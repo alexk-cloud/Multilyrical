@@ -141,33 +141,37 @@ function showSaved() {
 
     saved.forEach(song => {
         const card = document.createElement("div");
-        card.className = "song-card";
+        const title = document.createElement("h3");
+        const link = document.createElement("a");
 
+        card.className = "song-card";
+        link.className = "song-link";
+        
+        link.href = `/song/${encodeURIComponent(song.id)}`;
+        
         if (song.art) {
             const img = document.createElement("img");
             img.src = song.art;
             img.alt = `Album artwork for ${song.title}`;
-            img.width = 150;
-            card.appendChild(img);
+            img.className = "album-art";
+
+            link.appendChild(img);
         }
 
-        const title = document.createElement("h3");
-        const link = document.createElement("a");
-        link.href = `/song/${encodeURIComponent(song.id)}`;
-        link.textContent = song.title;
-        title.appendChild(link);
+        link.appendChild(document.createTextNode(song.title));
         card.appendChild(title);
-
+    
         const artist = document.createElement("p");
-        artist.textContent = song.artist;
-        card.appendChild(artist);
+        artist.className = "artist-name"
+        artist.textContent = `by ${song.artist}`;
 
-        const album = document.createElement("p");
-        album.textContent = song.album || "";
-        card.appendChild(album);
+        title.appendChild(link);
+        title.appendChild(artist);
+        card.appendChild(title);
 
         const removeBtn = document.createElement("button");
         removeBtn.textContent = "Remove";
+        removeBtn.className = "btn btn-sm btn-danger";
         removeBtn.addEventListener("click", () => {
             saved = saved.filter(item => item.id !== song.id);
             localStorage.setItem(
@@ -459,7 +463,7 @@ function showPlaylists() {
                 }
 
                 const songLink = document.createElement("a");
-                songLink.href = `/song/${song.id}`;
+                songLink.href = `/song/${encodeURIComponent(song.id)}`;
                 songLink.className = "playlist-song-link";
 
                 const songInfo = document.createElement("div");
