@@ -10,7 +10,7 @@
     <body>
         {% include 'header.html' %}
 
-        <h1 class="page-title"> Search Results </h1>
+        <h1 class="page-title">Search Results for "{{ query }}"</h1>
         
         {% if error %}
             <p> {{ error }} </p>
