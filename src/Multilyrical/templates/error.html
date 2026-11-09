@@ -2,14 +2,14 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Error Occurred</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
 
     <body>
-        {{ error }}
+        {% include 'header.html' %}
+
+        <p class="std-msg">{{ error }}</p>
     </body>
-
-    <br><br>
-
-    <a href="/">Return Home</a>
-
 </html>

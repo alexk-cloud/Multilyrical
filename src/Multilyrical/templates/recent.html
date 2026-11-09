@@ -17,13 +17,11 @@
                 <div class="song-card">
                     <h3>
                         <a href="{{ url_for('results_by_id', song_id=song.id) }}" class="song-link">
-                            {% if song.image_url %}
-                                <img 
-                                    src="{{ song.image_url }}" 
-                                    alt="Album cover for {{ title }}"
-                                    class="album-art"
-                                >
-                            {% endif %}
+                            <img 
+                                src="{{ song.image_url or url_for('static', filename='default-song-image.png') }}" 
+                                alt="Album cover for {{ title }}"
+                                class="album-art"
+                            >
                             {{ song.title }}
                         </a>
                         <p class="artist-name">by {{ song.artist }}</p>

@@ -207,7 +207,10 @@ def results_by_id(song_id):
         )
     except Exception as e:
         print(f"Failed to retrieve song: {e}")
-        return "Unable to retrieve this song's information.", 500
+        return render_template(
+            "error.html",
+            error="Unable to retrieve this song right now. Please try again later."
+        ), 503
 
 @app.route("/recent")
 def recently_viewed():
