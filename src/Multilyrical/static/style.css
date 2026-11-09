@@ -175,6 +175,42 @@ body {
   margin: 10px;
 }
 
+.insights {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#overview {
+  max-width: 650px;
+  font-size: 16px;
+  font-style: italic;
+  margin: 8px;
+}
+
+.theme-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.song-theme {
+  padding: 8px 14px;
+  margin-top: 14px;
+  border: 2px solid black;
+  border-radius: 20px;
+  background-color: #3219c3;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 2px 2px black;
+}
+
 #save-song {
   font-size: 16px;
 }

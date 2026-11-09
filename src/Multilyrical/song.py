@@ -2,10 +2,15 @@ import sounddevice as sd
 import soundfile as sf
 import re
 import requests
+import os
 from shazamio import Serialize, Shazam
 from pathlib import Path
 from coverpy import CoverPy, NoResultsException
 from api_client import session
+from google import genai
+from google.genai import types
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 MAX_REC_SECS = 5
 SAMPLE_RATE = 44100
@@ -21,6 +26,7 @@ year = None
 song_cache = {}
 search_cache = {}
 art_cache = {}
+info_cache = {}
 
 def record():
     duration = MAX_REC_SECS
@@ -274,3 +280,56 @@ def get_song_by_id(song_id):
     except ValueError as e:
         print(f"Could not process LRCLIB response: {e}")
         return None
+
+class Summary(BaseModel):
+    overview: str = Field(description="A brief overview of the song")
+    themes: List[str] = Field(
+        min_length=3,
+        max_length=3,
+        description="Exactly three major themes of the song (words only)"
+        )
+
+def generate_insights(title, artist, lyrics):
+    cache_key = (title.lower(), artist.lower())
+
+    if cache_key in info_cache:
+        print("Using cached song insights.")
+        return info_cache[cache_key]
+    
+    prompt = f"""
+    Analyze this song and its lyrics.
+
+    Title: {title}
+    Artist: {artist}
+    Lyrics:
+    {lyrics}
+
+    Provide:
+    - A brief overview (maximum 3 sentences)
+    - Three major themes (only the words, no description)
+
+    Avoid generic interpretations that could
+    apply to almost any song.
+    """
+
+    client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
+
+    response = client.models.generate_content(
+        model="gemini-3.5-flash-lite",
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=Summary
+        )
+    )
+
+    insights = Summary.model_validate_json(response.text)
+    info_cache[cache_key] = {
+        "overview": insights.overview,
+        "themes": insights.themes,
+    }
+    
+    return {
+        "overview": insights.overview,
+        "themes": insights.themes,
+    }

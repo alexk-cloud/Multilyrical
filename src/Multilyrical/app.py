@@ -67,12 +67,13 @@ def results():
     error = None
 
     try:
-        #lyrics = l.get_lyrics(title, artist)
         lyrics = song.get("plainLyrics", "").splitlines()
 
-        if lyrics is None:
+        if not lyrics:
             error = "Lyrics could not be found. Please try again later."
         elif request.method == "POST":
+            insights = s.generate_insights(title, artist, lyrics)
+
             if target_lang and lyrics:
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
 
@@ -88,6 +89,8 @@ def results():
         title=title,
         album=album,
         image_url=image_url,
+        overview=insights["overview"],
+        themes=insights["themes"],
         year=year,
         lyrics=lyrics,
         langs=l.get_langs(),
@@ -173,11 +176,12 @@ def results_by_id(song_id):
 
         #keep only the 10 most recent songs
         session["recent_songs"] = recent_songs[:10]
-        
-        if lyrics:
-            lyrics = lyrics.splitlines()
-        else:
+
+        if not lyrics:
             lyrics = []
+        else:
+            lyrics = lyrics.splitlines()
+            insights = s.generate_insights(title, artist, lyrics)
         
         translated_lyrics = []
         target_lang = request.form.get("target_lang", "en")
@@ -185,8 +189,7 @@ def results_by_id(song_id):
         if request.method == "POST":
             if target_lang and lyrics:
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
-        
-        #FIXME: some songs return "Failed to retrieve song: 'collectionName'"
+
         return render_template(
             "results.html",
             song_id=song_id,
@@ -194,6 +197,8 @@ def results_by_id(song_id):
             title=title,
             album=album,
             image_url=image_url,
+            overview=insights["overview"],
+            themes=insights["themes"],
             lyrics=lyrics,
             langs=l.get_langs(),
             translated_lyrics=translated_lyrics,
