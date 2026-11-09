@@ -128,6 +128,7 @@ function saveSong() {
     }
 }
 
+// TODO: refactor to show favorites in rows
 function showSaved() {
     let saved = JSON.parse(
         localStorage.getItem("saved") || "[]"
@@ -406,12 +407,18 @@ function saveToPlaylist(playlistNames) {
 
 function showPlaylists() {
     const playlists = JSON.parse(localStorage.getItem("playlists") || "{}");
+    const message = document.createElement("p");
+    message.className = "std-msg"
+    message.textContent = ""
     playlistsContainer.innerHTML = "";
 
     let playlistNames = Object.keys(playlists);
 
     if (playlistNames.length === 0) {
-        playlistsContainer.textContent = "No playlists yet. Create one from a song page!";
+        //playlistsContainer.textContent = "No playlists yet. Create one from a song page!";
+        message.textContent = "No playlists yet. Create one from a song page!";
+        playlistsContainer.appendChild(message);
+
         return;
     }
 

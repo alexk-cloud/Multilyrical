@@ -18,6 +18,10 @@ img {
   transition: text-shadow 0.2s ease;
 }
 
+.std-msg {
+  text-align: center;
+}
+
 .saved-song-link {
   font-size: 20px;
 }
