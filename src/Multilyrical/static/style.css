@@ -122,6 +122,15 @@ body {
   transition: transform 0.2s;
 }
 
+#song-identify.recording {
+  background-color: #8b0000;
+  box-shadow: 1px 5px 3px #10083d, 0 0 15px rgba(139, 0, 0, 0.5);
+}
+
+#song-identify.recording:hover {
+  box-shadow: 0 3px 20px #8b0000, 0 0 20px rgba(139, 0, 0, 0.7);
+}
+
 #song-search {
   width: 100%;
   max-width: 100%;

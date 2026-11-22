@@ -3,6 +3,8 @@ import soundfile as sf
 import re
 import requests
 import os
+import threading
+import time
 from shazamio import Serialize, Shazam
 from pathlib import Path
 from coverpy import CoverPy, NoResultsException
@@ -23,23 +25,55 @@ title = None
 album = None
 year = None
 
+# recording state
+_recording_thread = None
+_cancel_recording = False
+_recording_complete = threading.Event()
+
 song_cache = {}
 search_cache = {}
 art_cache = {}
 info_cache = {}
 
 def record():
-    duration = MAX_REC_SECS
-    sample_rate = SAMPLE_RATE
+    global _recording_thread, _cancel_recording, _recording_complete
 
-    print("Now recording...")
-    audio = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
+    _cancel_recording = False
+    _recording_complete.clear()
 
-    sd.wait()
+    def _do_record():
+        global _cancel_recording
+        duration = MAX_REC_SECS
+        sample_rate = SAMPLE_RATE
 
-    sf.write(FILE_NAME, audio, sample_rate)
+        print("Now recording...")
+        audio = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
 
-    print("Audio saved!")
+        # checking for cancel
+        import time
+        start = time.time()
+        while time.time() - start < duration and not _cancel_recording:
+            time.sleep(0.05)
+
+        if _cancel_recording:
+            sd.stop()
+            print("Recording cancelled.")
+            _recording_complete.set()
+            return
+
+        sd.wait()
+        sf.write(FILE_NAME, audio, sample_rate)
+        print("Audio saved!")
+        _recording_complete.set()
+
+    _recording_thread = threading.Thread(target=_do_record)
+    _recording_thread.start()
+
+
+def cancel_recording():
+    global _cancel_recording
+    _cancel_recording = True
+    _recording_complete.wait(timeout=1.0)
 
 async def identify():
     global track_info

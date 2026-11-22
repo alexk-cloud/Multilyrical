@@ -4,7 +4,7 @@ import lyric as l
 import os
 
 from flask import Flask, render_template, jsonify, request, session
-from pathlib import Path
+from song import MAX_REC_SECS, FILE_PATH
 
 FLASK_KEY = os.getenv("FLASK_KEY")
 app = Flask(__name__)
@@ -18,10 +18,15 @@ def home():
 def id():
     try:
         s.record()
+        # wait for recording to complete (or be cancelled)
+        s._recording_complete.wait(timeout=MAX_REC_SECS + 1)
+
+        if s._cancel_recording:
+            return jsonify({"error": "Recording cancelled"}), 400
+
         track_info = asyncio.run(s.identify())
 
         # delete recording once song recognition is done
-        FILE_PATH = Path("recording.wav")
         FILE_PATH.unlink(missing_ok=True)
 
         if track_info is None:
@@ -30,13 +35,24 @@ def id():
         artist = track_info.track.subtitle
         title = track_info.track.title
         image_url = s.get_song_art(artist, title)
-    
+
         return jsonify({
             "artist": artist,
             "title": title,
             "image_url": image_url
         })
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/cancel", methods=["POST"])
+def cancel():
+    try:
+        s.cancel_recording()
+        FILE_PATH.unlink(missing_ok=True)
+
+        return jsonify({"status": "cancelled"})
+    
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -71,16 +87,17 @@ def results():
 
         if not lyrics:
             error = "Lyrics could not be found. Please try again later."
-        elif request.method == "POST":
+        else:
             insights = s.generate_insights(title, artist, lyrics)
 
-            if target_lang and lyrics:
+            if request.method == "POST" and target_lang and lyrics:
                 translated_lyrics = l.translate(lyrics, target_lang=target_lang)
 
         #TODO: maybe add condition and message for instrumental songs
     except Exception as e:
         print(f"Lyrics lookup or translation failed: {e}")
         error = "Can't retrieve lyrics."
+        insights = {"overview": "", "themes": []}
 
     return render_template(
         "results.html",

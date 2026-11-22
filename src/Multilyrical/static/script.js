@@ -10,6 +10,19 @@ const dialogInput = dialog?.querySelector("input");
 const dialogConfirm = dialog?.querySelector(".dialog-confirm");
 const dialogCancel = dialog?.querySelector(".dialog-cancel");
 
+let isRecording = false;
+
+function setRecordingState(recording) {
+    isRecording = recording;
+    if (recording) {
+        songBtn.textContent = "Cancel";
+        songBtn.classList.add("recording");
+    } else {
+        songBtn.textContent = "Identify Song";
+        songBtn.classList.remove("recording");
+    }
+}
+
 function showDialog(title, options = {}) {
     if (!dialog) return Promise.resolve(null);
 
@@ -73,32 +86,47 @@ function showAlert(title, message) {
 }
 
 async function idSong() {
-    try {
-        songBtn.disabled = true;
-        songBtn.textContent = "Listening...";
+    if (isRecording) {
+        try {
+            await fetch("/cancel", { method: "POST" });
+        } catch (e) {
+            console.error("Cancel failed:", e);
+        }
+        setRecordingState(false);
+        document.getElementById("song-result").textContent = "Recording cancelled.";
+        return;
+    }
 
+    // start recording
+    setRecordingState(true);
+    songBtn.disabled = false; // keep enabled so user can cancel
+
+    try {
         const result = document.getElementById("song-result");
         result.textContent = "Listening for 5 seconds...";
 
-        const response = await fetch("/identify", { 
-            method: "POST" 
+        const response = await fetch("/identify", {
+            method: "POST"
         });
         const data = await response.json();
 
         if (!response.ok) {
+            if (data.error === "Recording cancelled") {
+                setRecordingState(false);
+                return;
+            }
             throw new Error(data.error || "Song identification failed.");
         }
-        const params = new URLSearchParams({ 
-            artist: data.artist, 
-            title: data.title 
+        const params = new URLSearchParams({
+            artist: data.artist,
+            title: data.title
         });
         window.location.href = `/results?${params.toString()}`;
     } catch (error) {
-        document.getElementById("song-result").textContent = 
+        document.getElementById("song-result").textContent =
         `Error: ${error.message}`;
     } finally {
-        songBtn.disabled = false;
-        songBtn.textContent = "Identify Song";
+        setRecordingState(false);
     }
 }
 
