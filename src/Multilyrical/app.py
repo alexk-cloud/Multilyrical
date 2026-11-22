@@ -5,10 +5,19 @@ import os
 
 from flask import Flask, render_template, jsonify, request, session
 from song import MAX_REC_SECS, FILE_PATH
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 FLASK_KEY = os.getenv("FLASK_KEY")
 app = Flask(__name__)
 app.secret_key = FLASK_KEY
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
 @app.after_request
 def add_csp(response):
@@ -19,7 +28,7 @@ def add_csp(response):
         "font-src 'self' https://fonts.gstatic.com; "
         "img-src 'self' data: https:;"
     )
-    
+
     return response
 
 @app.route("/")
@@ -27,6 +36,7 @@ def home():
     return render_template("index.html")
 
 @app.route("/identify", methods=["POST"])
+@limiter.limit("20 per minute; 100 per hour")
 def id():
     try:
         s.record()
@@ -58,6 +68,7 @@ def id():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/cancel", methods=["POST"])
+@limiter.limit("30 per minute; 200 per hour")
 def cancel():
     try:
         s.cancel_recording()
@@ -69,6 +80,7 @@ def cancel():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/results", methods=["GET", "POST"])
+@limiter.limit("10 per minute; 50 per hour")
 def results():
     artist = request.args.get("artist") or request.form.get("artist", "")
     title = request.args.get("title") or request.form.get("title", "")
@@ -129,6 +141,7 @@ def results():
     )
 
 @app.route("/search", methods=["POST"])
+@limiter.limit("30 per minute; 200 per hour")
 def search():
     query = ""
     
@@ -163,6 +176,7 @@ def search():
     )
 
 @app.route("/artwork")
+@limiter.limit("60 per minute; 300 per hour")
 def get_artwork():
     artist = request.args.get("artist")
     title = request.args.get("title")
@@ -172,6 +186,7 @@ def get_artwork():
     return jsonify({"art": art})
 
 @app.route("/song/<int:song_id>", methods=["GET", "POST"])
+@limiter.limit("10 per minute; 50 per hour")
 def results_by_id(song_id):
     try:
         song = s.get_song_by_id(song_id)
