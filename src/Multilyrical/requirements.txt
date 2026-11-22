@@ -1,0 +1,11 @@
+flask
+flask-limiter
+sounddevice
+soundfile
+requests
+urllib3
+shazamio
+coverpy
+google-cloud-translate
+google-genai
+pydantic
