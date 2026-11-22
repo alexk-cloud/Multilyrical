@@ -10,6 +10,18 @@ FLASK_KEY = os.getenv("FLASK_KEY")
 app = Flask(__name__)
 app.secret_key = FLASK_KEY
 
+@app.after_request
+def add_csp(response):
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https:;"
+    )
+    
+    return response
+
 @app.route("/")
 def home():
     return render_template("index.html")
