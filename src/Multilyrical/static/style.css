@@ -112,6 +112,8 @@ body {
   transition: transform 0.2s ease;
   text-shadow: 2px 2px black;
   -webkit-text-stroke: 0.5px black;
+  margin-top: 10px;
+  margin-bottom: -50px;
 }
 
 #song-identify:hover, #search-button:hover, #user-activity a:hover, .dialog-confirm:hover, .btn:hover {
@@ -862,6 +864,7 @@ body {
   #song-identify, #search-button, #user-activity a {
     width: 100%;
     max-width: none;
+    margin-top: 5px;
   }
 
   #user-activity { max-width: none; }
