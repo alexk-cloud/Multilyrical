@@ -1,32 +1,60 @@
 import requests
-from google.cloud import translate_v2 as translate
+import os
 from api_client import session
+from dotenv import load_dotenv
 
+load_dotenv()
 lyrics_cache = {}
 
-tr = translate.Client()
+def translate(
+    text: str | list[str],
+    orig_lang: str | None = None,
+    target_lang: str = "en"
+) -> list[str]:
 
-def translate(text: str | list[str], 
-            orig_lang: str | None = None, 
-            target_lang: str = "en"
-            ) -> dict:
-    
-    global tr
+    api_key = os.getenv("GOOGLE_TRANSLATE_API_KEY")
+
+    if not api_key:
+        raise RuntimeError("GOOGLE_TRANSLATE_API_KEY not found.")
 
     if isinstance(text, str):
         text = [text]
 
-    results = tr.translate(
-        values=text,
-        target_language=target_lang,
-        source_language=orig_lang,
-        format_="text"
+    response = requests.post(
+        "https://translation.googleapis.com/language/translate/v2",
+        headers={
+            "X-Goog-Api-Key": api_key,
+            "Content-Type": "application/json",
+        },
+        json={
+            "q": text,
+            "target": target_lang,
+            "format": "text",
+            **({"source": orig_lang} if orig_lang else {}),
+        },
+        timeout=20,
     )
 
-    return [item["translatedText"] for item in results]
+    response.raise_for_status()
+
+    translations = response.json()["data"]["translations"]
+    return [item["translatedText"] for item in translations]
 
 def get_langs():
-    return tr.get_languages(target_language="en")
+    api_key = os.getenv("GOOGLE_TRANSLATE_API_KEY")
+
+    if not api_key:
+        raise RuntimeError("GOOGLE_TRANSLATE_API_KEY not found.")
+
+    response = requests.get(
+        "https://translation.googleapis.com/language/translate/v2/languages",
+        headers={"X-Goog-Api-Key": api_key},
+        params={"target": "en"},
+        timeout=20,
+    )
+    response.raise_for_status()
+
+    return response.json()["data"]["languages"]
 
 def get_lyrics(title, artist):
     url = "https://lrclib.net/api/search"

@@ -2,13 +2,12 @@ import re
 import requests
 import os
 from shazamio import Serialize, Shazam
-from pathlib import Path
 from coverpy import CoverPy, NoResultsException
 from api_client import session
 from google import genai
 from google.genai import types
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List
 
 track_info = None
 artist = None
