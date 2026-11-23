@@ -1,9 +1,7 @@
 import requests
 import os
 from api_client import session
-from dotenv import load_dotenv
 
-load_dotenv()
 lyrics_cache = {}
 
 def translate(
