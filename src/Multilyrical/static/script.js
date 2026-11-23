@@ -11,6 +11,9 @@ const dialogConfirm = dialog?.querySelector(".dialog-confirm");
 const dialogCancel = dialog?.querySelector(".dialog-cancel");
 
 let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
+let cancelRequested = false;
 
 function setRecordingState(recording) {
     isRecording = recording;
@@ -87,45 +90,121 @@ function showAlert(title, message) {
 
 async function idSong() {
     if (isRecording) {
-        try {
-            await fetch("/cancel", { method: "POST" });
-        } catch (e) {
-            console.error("Cancel failed:", e);
+        cancelRequested = true;
+
+        if (mediaRecorder &&
+            mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
         }
-        setRecordingState(false);
-        document.getElementById("song-result").textContent = "Recording cancelled.";
+
         return;
     }
 
-    // start recording
     setRecordingState(true);
-    songBtn.disabled = false; // keep enabled so user can cancel
+    cancelRequested = false;
+
+    const result = document.getElementById("song-result");
+
+    result.textContent = "Requesting microphone access...";
+
+    let stream = null;
 
     try {
-        const result = document.getElementById("song-result");
+        // request mic access
+        stream = await navigator.mediaDevices.getUserMedia({
+            audio: true
+        });
+
+        if (cancelRequested) {
+            return;
+        }
+
+        // record audio in a format supported by the browser
+        const mimeType = MediaRecorder.isTypeSupported(
+            "audio/webm;codecs=opus"
+        ) ? "audio/webm;codecs=opus" : "audio/webm";
+
+        mediaRecorder = new MediaRecorder(stream, {
+            mimeType: mimeType
+        });
+
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+
         result.textContent = "Listening for 5 seconds...";
 
-        const response = await fetch("/identify", {
-            method: "POST"
+        mediaRecorder.start();
+
+        const audioBlob = await new Promise((resolve) => {
+            mediaRecorder.onstop = () => {
+                resolve(new Blob(audioChunks, {
+                    type: mimeType
+                }));
+            };
+
+            setTimeout(() => {
+                if (mediaRecorder &&
+                    mediaRecorder.state === "recording") {
+                    mediaRecorder.stop();
+                }
+            }, 5000);
         });
+
+        if (cancelRequested) {
+            result.textContent = "Recording cancelled.";
+            return;
+        }
+
+        result.textContent = "Identifying song...";
+
+        // send recording to Flask
+        const formData = new FormData();
+
+        formData.append("audio", audioBlob, "recording.webm");
+
+        const response = await fetch("/identify", {
+            method: "POST",
+            body: formData
+        });
+
         const data = await response.json();
 
         if (!response.ok) {
-            if (data.error === "Recording cancelled") {
-                setRecordingState(false);
-                return;
-            }
-            throw new Error(data.error || "Song identification failed.");
+            throw new Error(
+                data.error || "Song identification failed."
+            );
         }
+
+        // redirect to the results page
         const params = new URLSearchParams({
             artist: data.artist,
             title: data.title
         });
+
         window.location.href = `/results?${params.toString()}`;
+
     } catch (error) {
-        document.getElementById("song-result").textContent =
-        `Error: ${error.message}`;
+        if (error.name === "NotAllowedError") {
+            result.textContent =
+                "Please allow microphone access to identify songs.";
+        } else {
+            result.textContent = `Error: ${error.message}`;
+        }
+
     } finally {
+        // stop mic
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        mediaRecorder = null;
+        audioChunks = [];
+
         setRecordingState(false);
     }
 }

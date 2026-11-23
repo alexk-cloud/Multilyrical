@@ -1,7 +1,5 @@
 flask
 flask-limiter
-sounddevice
-soundfile
 requests
 urllib3
 shazamio

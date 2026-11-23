@@ -2,9 +2,9 @@ import asyncio
 import song as s
 import lyric as l
 import os
+import tempfile
 
 from flask import Flask, render_template, jsonify, request, session
-from song import MAX_REC_SECS, FILE_PATH
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -38,21 +38,28 @@ def home():
 @app.route("/identify", methods=["POST"])
 @limiter.limit("20 per minute; 100 per hour")
 def id():
+    audio = request.files.get("audio")
+
+    if not audio:
+        return jsonify({"error": "No audio recording received."}), 400
+
+    temp_file = tempfile.NamedTemporaryFile(
+        suffix=".webm",
+        delete=False
+    )
+
+    audio_path = temp_file.name
+
     try:
-        s.record()
-        # wait for recording to complete (or be cancelled)
-        s._recording_complete.wait(timeout=MAX_REC_SECS + 1)
+        audio.save(audio_path)
+        temp_file.close()
 
-        if s._cancel_recording:
-            return jsonify({"error": "Recording cancelled"}), 400
-
-        track_info = asyncio.run(s.identify())
-
-        # delete recording once song recognition is done
-        FILE_PATH.unlink(missing_ok=True)
+        track_info = asyncio.run(s.identify(audio_path))
 
         if track_info is None:
-            return jsonify({"error": "Song could not be identified."}), 404
+            return jsonify({
+                "error": "Song could not be identified."
+            }), 404
 
         artist = track_info.track.subtitle
         title = track_info.track.title
@@ -65,8 +72,17 @@ def id():
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Song identification failed: {e}")
 
+        return jsonify({
+            "error": "Song identification failed."
+        }), 500
+
+    finally:
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+
+"""
 @app.route("/cancel", methods=["POST"])
 @limiter.limit("30 per minute; 200 per hour")
 def cancel():
@@ -78,6 +94,7 @@ def cancel():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+"""
 
 @app.route("/results", methods=["GET", "POST"])
 @limiter.limit("10 per minute; 50 per hour")
