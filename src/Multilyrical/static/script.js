@@ -389,7 +389,8 @@ async function selectPlaylist() {
             dialogTitle.textContent = "Save to Playlist";
             dialogMessage.textContent = "Playlist created successfully!";
 
-            showDialogContent(buildPlaylistList());
+            currentContainer = buildPlaylistList();
+            showDialogContent(currentContainer);
         };
 
         const cancelBtn = document.createElement("button");
@@ -427,7 +428,7 @@ async function selectPlaylist() {
         dialogMessage.parentNode.insertBefore(wrapper, dialogMessage.nextSibling);
     }
 
-    const initialContainer = buildPlaylistList();
+    let currentContainer = buildPlaylistList();
 
     return new Promise((resolve) => {
         let closed = false;
@@ -445,7 +446,7 @@ async function selectPlaylist() {
 
         dialogConfirm.onclick = () => {
             cleanup();
-            resolve(initialContainer.dataset.selected || null);
+            resolve(currentContainer.dataset.selected || null);
         };
 
         dialogCancel.onclick = () => {
@@ -465,7 +466,7 @@ async function selectPlaylist() {
         dialogCancel.textContent = "Cancel";
         dialogCancel.style.display = "inline-flex";
 
-        showDialogContent(initialContainer);
+        showDialogContent(currentContainer);
         dialog.showModal();
     });
 }
